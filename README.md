@@ -15,7 +15,7 @@ DemoPilot is a presentation coach for hackathon teams and product builders. It h
 
 ### How the OpenAI API is used in detail
 
-- **One request per generation:** `src/decision.ts` sends `POST https://api.openai.com/v1/decisions` with `fetch` and a Bearer key read from `OPENAI_API_KEY` on the server. The `openai` npm package is listed in `package.json`, but no source file imports it.
+- **One request per generation:** `src/decision.ts` sends `POST https://api.openai.com/v1/decisions` with `fetch` and a Bearer key read from `OPENAI_API_KEY` on the server. The official `openai` SDK is not used; the call is a plain HTTPS request.
 - **Request body:** `{ model: "gpt-6-luna", input, questions }`. `input` is a JSON string containing `project_name`, `problem`, `audience`, `working_features` (split from the features field), `evidence_and_limitations`, and `requested_demo_seconds`.
 - **Four typed questions:**
   - `lead_moment` (choice): one `feature_N` option per parsed feature, plus `problem_context`. With no features, it offers `problem_context` and `evidence_context`.
@@ -33,6 +33,7 @@ DemoPilot is a presentation coach for hackathon teams and product builders. It h
 | `npm run build` on the current tree | Passes (Vite production build) |
 | Local AI generation, sample brief via the Vite proxy | Returned a focus feature, readiness 2.4/3, and a next rehearsal step |
 | Production AI generation, sample brief (earlier deployment) | Returned a focus feature and readiness 2.47/3; `/api/status` reported AI enabled |
+| Model name `gpt-6-luna` accepted by the Decisions endpoint | Yes: local and live calls returned full decision results (not independently checked against OpenAI docs in this repo) |
 | Invalid brief (missing name/problem) | Rejected with HTTP 400 |
 | Browser visual check of the latest UI (font-size and workspace changes) | **Not completed** in this environment |
 | Live site after the final code commits (page, docs files, `/api/status`, invalid brief, one AI generation) | All routes returned 200, the invalid brief returned 400, and a QueueLess test brief returned a decision review (readiness 1.84/3; the model chose to lead with the problem, at low confidence) |
@@ -210,7 +211,7 @@ npm run preview  # Preview the production build
 
 No login, cloud sync, team collaboration, project/repository inspection, evidence capture, or server-side brief storage. AI review requires an operator-configured API key. Generated plans require human review and a real rehearsal.
 
-The OpenAI call has no request timeout, retry, or output cap. The Decisions response is not schema-validated at runtime (type assertion only), and upstream error bodies are discarded; only the HTTP status is logged. Readiness and confidence values are the model's estimates, not measured outcomes. The OpenAPI file restricts `length` to 45, 60, or 90, but the server does not enforce it.
+The OpenAI call has no request timeout, retry, or output cap. The Decisions response is not schema-validated at runtime (type assertion only), and upstream error bodies are discarded; only the HTTP status is logged. Readiness and confidence values are the model's estimates, not measured outcomes. The public `/api/generate` endpoint has no authentication or rate limiting, so it spends the operator's OpenAI quota on every call. The OpenAPI file restricts `length` to 45, 60, or 90, but the server does not enforce it.
 
 ## License
 
