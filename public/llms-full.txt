@@ -94,3 +94,14 @@ DemoPilot does not run or test the presenter's product, inspect repositories/scr
 
 - Full source and product behavior: https://github.com/Yash-1706/openai-dev-day-polaris
 - API details: https://openai-dev-day-polaris.vercel.app/api/docs.md
+
+
+## Response and input notes
+
+- `readinessScore` is a number on a 0 to 3 scale. The levels are 0 Not specified, 1 Feature stated, 2 Evidence described, 3 Ready to rehearse. Values may be fractional because the model returns an expected score.
+- Confidence and probability fields are between 0 and 1 and are model estimates, not measured outcomes.
+- When the model chooses to lead with the problem instead of a feature, `focusFeature` is `""` and `review.focus` is `"Start with the problem"`.
+- `review.nextStep` is one of three templates: prepare one visible proof point, state the prototype limitation first, or rehearse the lead feature as a complete interaction. It names the focus feature, or "the main experience" when none was chosen.
+- Separate features with newlines or semicolons. Plain commas do not split features.
+- `length` is passed through unvalidated; 45, 60 and 90 are the values the UI offers. There is no server default.
+- Error bodies have the shape `{ "error": "message" }`. Check order: 503 (no key configured) comes first, then 413 (body over 40 KiB), then 400 (invalid JSON or missing name or problem), then 502 (upstream failure).

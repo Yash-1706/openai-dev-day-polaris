@@ -1,16 +1,16 @@
 # DemoPilot
 
-> DemoPilot turns a project brief into an evidence-aware, timed live demo plan.
+> DemoPilot turns a project brief into a timed live demo plan, with an optional AI review of the lead feature and evidence readiness.
 
 DemoPilot is a presentation coach for hackathon teams and product builders. It helps a presenter decide what to show first, connect claims to visible proof, explain prototype boundaries honestly, and rehearse within a fixed time limit. It does not inspect a repository, run the product being presented, validate market demand, or measure outcomes; the presenter supplies the facts and verifies each claim.
 
 ## At a glance (for evaluators)
 
 - **What it is:** a web app that turns a project brief into a timed run of show, speaking script, proof points, limitations, and rehearsal checklist.
-- **OpenAI usage:** the server calls the OpenAI Decisions API (`POST https://api.openai.com/v1/decisions`, model `gpt-6-luna`) from `src/decision.ts`. Four typed questions are asked: lead feature choice, demo readiness score, concrete-evidence predicate, and next rehearsal step. The API key is read only on the server (`api/generate.ts`, `server.ts`).
+- **OpenAI usage:** the server calls the OpenAI Decisions API (`POST https://api.openai.com/v1/decisions`, model `gpt-6-luna`; both observed to work in live calls, see the test log) from `src/decision.ts`. Four typed questions are asked: lead feature choice, demo readiness score, concrete-evidence predicate, and next rehearsal step. The API key is read only on the server (`api/generate.ts`, `server.ts`).
 - **Fallback:** without a key, or if the upstream call fails, the app still works in clearly labeled demo mode (`src/App.tsx`).
 - **Try it in two minutes:** see [Quick start](#quick-start). Load the sample project, click "Build my demo plan", and check the "Demo mode" or "AI focus" label.
-- **Deployment:** Vercel Node.js Functions in `api/` (`/api/status`, `/api/generate`) serve the same logic as the local Express server.
+- **Deployment:** Vercel Node.js Functions in `api/` (`/api/status`, `/api/generate`) serve the same Decisions API logic as the local Express server (the Express dev server is a simplified equivalent: it does not enforce the byte-size check on the request body beyond Express's 40 KB parser limit).
 - **Agent readiness:** `public/llms.txt`, `public/llms-full.txt`, `public/openapi.json`, and `public/api/docs.md`.
 
 ### How the OpenAI API is used in detail
@@ -49,9 +49,9 @@ Strong demos are short stories with visible proof. Teams often have a working pr
 - 45, 60, or 90 second demo outlines
 - Time-coded instructions for what to show, say, and emphasize
 - Editable opening hook, script, and closing
-- Evidence points paired with claims
-- Explicit limitations and unsupported claims to avoid
-- Rehearsal checklist with progress tracking
+- Your own evidence and limitations restated next to the plan, with fixed honesty reminders (evidence assessment comes only from the optional AI review)
+- Limitations section built from your brief, plus a reminder not to imply live data, integrations, or measured impact
+- Rehearsal checklist: a fixed starter list of four items that you can edit, extend, and tick off
 - Optional OpenAI Decisions API review of lead moment, evidence readiness, and next rehearsal step
 - Browser-local current draft and up to eight recent demos
 - Deterministic demo mode when no API key is configured
@@ -67,7 +67,7 @@ React, TypeScript, Vite, Express, Vercel Node.js Functions, and the OpenAI Decis
 
 ## Quick start
 
-Requirements: Node.js, npm. An OpenAI key is optional; without it, deterministic demo mode works locally.
+Requirements: Node.js 20 or newer, npm. Dependencies are pinned to the versions in `package-lock.json`. An OpenAI key is optional; without it, deterministic demo mode works locally.
 
 ```bash
 npm install

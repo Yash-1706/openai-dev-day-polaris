@@ -616,3 +616,17 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visib
   .workflow-step b { font-size: 8px; }
   .empty-steps { font-size: 8px; }
 }
+
+/* Accessibility pass: readable minimum sizes and higher-contrast text */
+body{font-size:14px}
+.field,.field>span,.length-label,.nav-item,.card-head p,.privacy-note,.sample-link,.connection-pill,.saved-indicator,.new-draft,.breadcrumb,.workflow-step b,.empty-card>p,.empty-steps,.empty-cta,.notice,.script-footer,.plan-foot,.plan-foot button,.text-action,.add-check,.beat-count,.progress-count,.copy-plan,.copy-small,.mode-pill,.decision-metrics,.decision-note,.decision-title span,.decision-next-step>span,.hero-traits span,.sidebar-note p,.session-card small,.recent-demo small,.library-empty,.footer,.art-badge{font-size:13px}
+.field input,.field textarea,.beat-field textarea,.script-text,.editable-bullet textarea,.check-item textarea,.primary-btn,.length-option,.decision-next-step p{font-size:14px}
+.hook-text{font-size:16px}.closing-card textarea{font-size:15px}
+.section-kicker,.eyebrow,.nav-label,.form-section-label,.brief-progress>div:first-child,.length-label,.beat-field small,.decision-next-step small,.empty-topline,.empty-state,.recent-heading,.recent-heading b,.workspace-switcher small,.art-card-head,.art-card-bottom small,.beat-time,.length-pill,.beat-index{font-size:11.5px}
+.sample-link small,.field>span i,.brief-progress b small,.session-card small{font-size:12px}
+.session-card strong,.recent-demo strong,.sidebar-note strong,.art-card-bottom strong{font-size:13px}
+.field>span i,.privacy-note,.connection-pill,.saved-indicator,.breadcrumb,.empty-card>p,.card-head p,.sample-link small,.notice,.script-footer,.plan-foot,.library-empty{color:#566075}
+.empty-state,.section-kicker,.form-section-label,.beat-field small,.length-label{color:#566075}
+.sidebar-note p,.session-card small,.recent-demo small,.library-empty{color:#aab5c8}
+.field input:focus,.field textarea:focus,.beat-field textarea:focus,.script-text:focus,.hook-text:focus,.editable-bullet textarea:focus,.closing-card textarea:focus,.check-item textarea:focus{outline:2px solid #5b4cdc;outline-offset:1px}
+button:focus-visible,a:focus-visible{outline:2px solid #5b4cdc;outline-offset:2px}

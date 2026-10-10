@@ -9,7 +9,7 @@ app.get('/api/status', (_req, res) => res.json({ ai: Boolean(process.env.OPENAI_
 app.post('/api/generate', async (req, res) => {
   if (!process.env.OPENAI_API_KEY) return res.status(503).json({ error: 'AI generation is not configured.' });
   const { project } = req.body ?? {};
-  if (!project?.name || !project?.problem) return res.status(400).json({ error: 'Project name and problem are required.' });
+  if (typeof project?.name !== 'string' || !project.name.trim() || typeof project?.problem !== 'string' || !project.problem.trim()) return res.status(400).json({ error: 'Project name and problem are required.' });
 
   try {
     res.json(await reviewDemo(project, process.env.OPENAI_API_KEY));

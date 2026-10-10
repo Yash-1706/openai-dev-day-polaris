@@ -24,11 +24,19 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ai"],
-                  "properties": { "ai": { "type": "boolean" } },
+                  "required": [
+                    "ai"
+                  ],
+                  "properties": {
+                    "ai": {
+                      "type": "boolean"
+                    }
+                  },
                   "additionalProperties": false
                 },
-                "example": { "ai": true }
+                "example": {
+                  "ai": true
+                }
               }
             }
           }
@@ -44,7 +52,9 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/GenerateRequest" },
+              "schema": {
+                "$ref": "#/components/schemas/GenerateRequest"
+              },
               "example": {
                 "project": {
                   "name": "QueueLess",
@@ -63,7 +73,9 @@
             "description": "Lead-feature choice and evidence-readiness review",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/GenerateResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateResponse"
+                },
                 "example": {
                   "focusFeature": "Wait-time badges",
                   "review": {
@@ -79,10 +91,18 @@
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "413": { "$ref": "#/components/responses/TooLarge" },
-          "502": { "$ref": "#/components/responses/UpstreamError" },
-          "503": { "$ref": "#/components/responses/NotConfigured" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "413": {
+            "$ref": "#/components/responses/TooLarge"
+          },
+          "502": {
+            "$ref": "#/components/responses/UpstreamError"
+          },
+          "503": {
+            "$ref": "#/components/responses/NotConfigured"
+          }
         }
       }
     }
@@ -91,18 +111,47 @@
     "schemas": {
       "GenerateRequest": {
         "type": "object",
-        "required": ["project"],
+        "required": [
+          "project"
+        ],
         "properties": {
           "project": {
             "type": "object",
-            "required": ["name", "problem"],
+            "required": [
+              "name",
+              "problem"
+            ],
             "properties": {
-              "name": { "type": "string", "minLength": 1, "description": "Project name." },
-              "problem": { "type": "string", "minLength": 1, "description": "User problem the project addresses." },
-              "audience": { "type": "string" },
-              "features": { "type": "string", "description": "Working features stated by the project owner. Separate multiple items with newlines or semicolons." },
-              "evidence": { "type": "string", "description": "Visible proof and important prototype limitations, as stated by the project owner." },
-              "length": { "type": "integer", "enum": [45, 60, 90], "default": 60 }
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Project name."
+              },
+              "problem": {
+                "type": "string",
+                "minLength": 1,
+                "description": "User problem the project addresses."
+              },
+              "audience": {
+                "type": "string"
+              },
+              "features": {
+                "type": "string",
+                "description": "Working features stated by the project owner. Separate multiple items with newlines or semicolons."
+              },
+              "evidence": {
+                "type": "string",
+                "description": "Visible proof and important prototype limitations, as stated by the project owner."
+              },
+              "length": {
+                "type": "integer",
+                "description": "Requested demo length in seconds. The UI offers 45, 60 and 90; the server passes the value through without validation and applies no default.",
+                "examples": [
+                  45,
+                  60,
+                  90
+                ]
+              }
             },
             "additionalProperties": true
           }
@@ -111,48 +160,120 @@
       },
       "GenerateResponse": {
         "type": "object",
-        "required": ["focusFeature", "review"],
+        "required": [
+          "focusFeature",
+          "review"
+        ],
         "properties": {
-          "focusFeature": { "type": "string", "description": "Chosen supplied feature, or empty string when problem context should lead." },
-          "review": { "$ref": "#/components/schemas/DecisionReview" }
+          "focusFeature": {
+            "type": "string",
+            "description": "Chosen supplied feature, or empty string when problem context should lead."
+          },
+          "review": {
+            "$ref": "#/components/schemas/DecisionReview"
+          }
         },
         "additionalProperties": true
       },
       "DecisionReview": {
         "type": "object",
-        "required": ["focus", "focusConfidence", "readinessScore", "readinessConfidence", "evidenceProbability", "nextStep", "nextStepConfidence"],
+        "required": [
+          "focus",
+          "focusConfidence",
+          "readinessScore",
+          "readinessConfidence",
+          "evidenceProbability",
+          "nextStep",
+          "nextStepConfidence"
+        ],
         "properties": {
-          "focus": { "type": "string" },
-          "focusConfidence": { "type": "number", "minimum": 0, "maximum": 1 },
-          "readinessScore": { "type": "number", "description": "Model-provided readiness score; not an audited measurement." },
-          "readinessConfidence": { "type": "number", "minimum": 0, "maximum": 1 },
-          "evidenceProbability": { "type": "number", "minimum": 0, "maximum": 1, "description": "Model estimate from the supplied brief; not verified evidence." },
-          "nextStep": { "type": "string" },
-          "nextStepConfidence": { "type": "number", "minimum": 0, "maximum": 1 }
+          "focus": {
+            "type": "string"
+          },
+          "focusConfidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "readinessScore": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 3,
+            "description": "Model-estimated demo readiness: 0 Not specified, 1 Feature stated, 2 Evidence described, 3 Ready to rehearse."
+          },
+          "readinessConfidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "evidenceProbability": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Model estimate from the supplied brief; not verified evidence."
+          },
+          "nextStep": {
+            "type": "string"
+          },
+          "nextStepConfidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
         }
       },
       "Error": {
         "type": "object",
-        "required": ["error"],
-        "properties": { "error": { "type": "string" } }
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        }
       }
     },
     "responses": {
       "BadRequest": {
         "description": "Invalid JSON, or required project name/problem is missing.",
-        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
       },
       "TooLarge": {
         "description": "Request body exceeds 40 KiB.",
-        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
       },
       "UpstreamError": {
         "description": "The OpenAI Decisions API request failed.",
-        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
       },
       "NotConfigured": {
         "description": "Server-side AI is not configured.",
-        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
       }
     }
   }
