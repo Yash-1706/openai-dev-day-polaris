@@ -40,37 +40,6 @@ DemoPilot is a presentation coach for hackathon teams and product builders. It h
 
 Earlier failures that were fixed: the Vercel deployment initially lacked API routes (demo mode was silently shown), the first production generation failed inside the function runtime (fixed by calling the Decisions endpoint with `fetch`), and the local Vite proxy ignored `DEMOPILOT_API_PORT` (fixed).
 
-## Built for the DevDay Exchange Bengaluru community hackathon
-
-The event states that projects are reviewed for usefulness, technical execution, originality, and how well the solution works. This section maps DemoPilot to those four, using only what is in the repository.
-
-| Criterion | What DemoPilot does | Where to look | Honest caveat |
-| --- | --- | --- | --- |
-| Usefulness | Helps a presenter with a short slot decide what to show first, tie claims to proof, state limits, and rehearse. Hackathon demos are exactly this situation. | Sample brief in the app,  | The plan text is template-based; the model does not write it. |
-| Technical execution | A server-side call to the OpenAI Decisions API with four typed questions (choice, score, predicate, choice). Code applies the result, never trusts free text, and falls back to a labeled demo mode on any failure. Vercel Functions mirror the local Express server. | , ,  | No timeout, retry, schema validation, or rate limiting yet (see Current limitations). |
-| Originality | Uses the Decisions API for a bounded editorial choice (what leads the demo) with the model never inventing product facts, and ships agent-readable docs (, OpenAPI). |  | Demo-planning is a common idea; DemoPilot does not use dots, plugin extensions, the Agents API, or MCP events. |
-| How well it works | Builds, deploys, and returns decision reviews from the live site. Invalid input is rejected with clear errors. | Test log above | No automated tests; the latest UI was not visually checked in a browser by the author tooling. |
-
-### Architecture and data flow
-
-\
-1. The browser sends the brief to  only when  reports a configured key.
-2. The server asks four typed questions and returns a compact review, never the key.
-3. The browser builds the plan locally from the brief, moving the chosen feature first.
-4. If anything fails, the same plan is built in demo mode and labeled as such.
-
-### Design decisions
-
-- **Model chooses, code writes.** Free-text generation can invent features, so the model only picks among options derived from the user's own feature list.
-- **Fail visible, not silent.** Every fallback is labeled "Demo mode" so users and reviewers know what produced the result.
-- **Key stays server-side.** No  variables;  exposes only a boolean.
-- **Honesty built in.** Each plan includes a limitations section and a reminder not to imply live data, integrations, or measured impact.
-- **Agent-readable.** , , , and API docs describe the contract; they contain no instructions about how to score the project.
-
-### Roadmap (not implemented)
-
-Runtime response validation, request timeout and retry, rate limiting, automated tests (API handlers and ), a Responses-API drafting step with grounded checks, and plugin or MCP packaging.
-
 ## Why DemoPilot
 
 Strong demos are short stories with visible proof. Teams often have a working prototype but struggle to decide what to show, what to say, and how to handle gaps. DemoPilot turns supplied project context into an editable run of show so teams can spend less time staring at a blank page and more time rehearsing the real product.
