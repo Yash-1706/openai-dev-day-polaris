@@ -17,6 +17,8 @@ Copy `.env.example` to `.env` and set `OPENAI_API_KEY`. The key is read only by 
 
 AI mode uses the OpenAI Decisions API (`gpt-6-luna`) to choose which stated working feature should lead the demo and score the evidence readiness. DemoPilot then builds the spoken plan from the project details, so the model chooses the emphasis without inventing product copy or capabilities. If the key or endpoint is unavailable, the app remains usable in demo mode.
 
+On Vercel, `/api/status` and `/api/generate` run as Node.js Functions and read `OPENAI_API_KEY` server-side. Add that variable to the Vercel project’s Production environment and redeploy. Local development uses the Express server with the same Decisions API logic.
+
 The current project, generated plan, rehearsal checklist, and decision review are saved in browser local storage.
 
 ## Build
