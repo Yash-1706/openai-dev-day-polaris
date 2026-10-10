@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /api/generate
+Sitemap: https://openai-dev-day-polaris.vercel.app/sitemap.xml

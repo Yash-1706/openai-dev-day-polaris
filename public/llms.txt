@@ -1,0 +1,19 @@
+# DemoPilot
+
+> Turn a project brief into an evidence-aware, timed live demo plan.
+
+DemoPilot helps product teams prepare an honest, focused product walkthrough. The project brief is user-supplied; DemoPilot does not inspect, run, or verify the product being presented.
+
+## Project
+- [Live application](https://openai-dev-day-polaris.vercel.app/): interactive demo planner
+- [Source repository](https://github.com/Yash-1706/openai-dev-day-polaris): implementation and issue context
+- [Complete LLM context](https://openai-dev-day-polaris.vercel.app/llms-full.txt): detailed product, API, and safety guide
+- [HTTP API reference](https://openai-dev-day-polaris.vercel.app/api/docs.md): machine-readable API contract
+- [OpenAPI 3.1 specification](https://openai-dev-day-polaris.vercel.app/openapi.json): structured endpoint schemas for API clients and agent frameworks
+- [Robots policy](https://openai-dev-day-polaris.vercel.app/robots.txt): crawler guidance
+
+## API
+- [AI configuration status](https://openai-dev-day-polaris.vercel.app/api/status): GET; returns only whether server AI is configured
+- [Decisions review](https://openai-dev-day-polaris.vercel.app/api/generate): POST; accepts a project brief and returns a bounded lead-feature/readiness/rehearsal review
+
+The API key is server-side and is never returned. The public generation endpoint may consume the operator's OpenAI quota; use it only when authorized and avoid unnecessary repeat calls. The app supports deterministic demo mode without an OpenAI key. Model output is guidance, not proof of product functionality.

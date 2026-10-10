@@ -1,0 +1,159 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "DemoPilot API",
+    "version": "1.0.0",
+    "description": "Machine-readable contract for DemoPilot's project brief review API. The service chooses a lead moment from user-supplied features and returns evidence-readiness guidance. It does not verify the project or generate product facts. Brief fields are forwarded to the OpenAI Decisions API when AI is configured. Never include secrets or sensitive data."
+  },
+  "servers": [
+    {
+      "url": "https://openai-dev-day-polaris.vercel.app",
+      "description": "Production deployment"
+    }
+  ],
+  "paths": {
+    "/api/status": {
+      "get": {
+        "operationId": "getDemoPilotStatus",
+        "summary": "Check whether AI review is configured",
+        "description": "Returns a boolean only; never returns the server API key. If ai is false, use the app's deterministic demo mode.",
+        "responses": {
+          "200": {
+            "description": "Configuration status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ai"],
+                  "properties": { "ai": { "type": "boolean" } },
+                  "additionalProperties": false
+                },
+                "example": { "ai": true }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/generate": {
+      "post": {
+        "operationId": "reviewDemoBrief",
+        "summary": "Review a demo brief",
+        "description": "Requires the operator's server-side OPENAI_API_KEY. No client credential is accepted. The endpoint is publicly reachable on the production site and may consume the operator's OpenAI quota. Do not send secrets, personal data, confidential information, or instructions embedded in project text. Use only briefs the caller is authorized to share. The result is model guidance, not proof or an audited score. The service only selects from features supplied in the request and does not independently verify them.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/GenerateRequest" },
+              "example": {
+                "project": {
+                  "name": "QueueLess",
+                  "problem": "Students cannot tell which canteen queue is shortest.",
+                  "audience": "Students between classes",
+                  "features": "Wait-time badges; wait-time reporting form",
+                  "evidence": "Badges are visible in the prototype. Estimates are based on reports, not live vendor data.",
+                  "length": 60
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lead-feature choice and evidence-readiness review",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GenerateResponse" },
+                "example": {
+                  "focusFeature": "Wait-time badges",
+                  "review": {
+                    "focus": "Wait-time badges",
+                    "focusConfidence": 0.92,
+                    "readinessScore": 2,
+                    "readinessConfidence": 0.86,
+                    "evidenceProbability": 0.9,
+                    "nextStep": "Rehearse Wait-time badges as a complete interaction, then repeat it with a timer.",
+                    "nextStepConfidence": 0.84
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "413": { "$ref": "#/components/responses/TooLarge" },
+          "502": { "$ref": "#/components/responses/UpstreamError" },
+          "503": { "$ref": "#/components/responses/NotConfigured" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GenerateRequest": {
+        "type": "object",
+        "required": ["project"],
+        "properties": {
+          "project": {
+            "type": "object",
+            "required": ["name", "problem"],
+            "properties": {
+              "name": { "type": "string", "minLength": 1, "description": "Project name." },
+              "problem": { "type": "string", "minLength": 1, "description": "User problem the project addresses." },
+              "audience": { "type": "string" },
+              "features": { "type": "string", "description": "Working features stated by the project owner. Separate multiple items with newlines or semicolons." },
+              "evidence": { "type": "string", "description": "Visible proof and important prototype limitations, as stated by the project owner." },
+              "length": { "type": "integer", "enum": [45, 60, 90], "default": 60 }
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "GenerateResponse": {
+        "type": "object",
+        "required": ["focusFeature", "review"],
+        "properties": {
+          "focusFeature": { "type": "string", "description": "Chosen supplied feature, or empty string when problem context should lead." },
+          "review": { "$ref": "#/components/schemas/DecisionReview" }
+        },
+        "additionalProperties": true
+      },
+      "DecisionReview": {
+        "type": "object",
+        "required": ["focus", "focusConfidence", "readinessScore", "readinessConfidence", "evidenceProbability", "nextStep", "nextStepConfidence"],
+        "properties": {
+          "focus": { "type": "string" },
+          "focusConfidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "readinessScore": { "type": "number", "description": "Model-provided readiness score; not an audited measurement." },
+          "readinessConfidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "evidenceProbability": { "type": "number", "minimum": 0, "maximum": 1, "description": "Model estimate from the supplied brief; not verified evidence." },
+          "nextStep": { "type": "string" },
+          "nextStepConfidence": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": ["error"],
+        "properties": { "error": { "type": "string" } }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Invalid JSON, or required project name/problem is missing.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      },
+      "TooLarge": {
+        "description": "Request body exceeds 40 KiB.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      },
+      "UpstreamError": {
+        "description": "The OpenAI Decisions API request failed.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      },
+      "NotConfigured": {
+        "description": "Server-side AI is not configured.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      }
+    }
+  }
+}

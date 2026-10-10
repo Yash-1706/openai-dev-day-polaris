@@ -560,3 +560,59 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visib
 @media (max-width: 980px) {
   .recent-heading, .recent-list, .library-empty { display: none; }
 }
+
+/* Slightly larger supporting text for easier scanning. */
+.breadcrumb,
+.nav-item,
+.card-head p,
+.field,
+.field input,
+.field textarea,
+.primary-btn,
+.hero-copy>p,
+.hero-traits span,
+.workflow-step b,
+.workflow-estimate,
+.empty-card>p,
+.empty-steps,
+.beat-field textarea,
+.editable-bullet textarea,
+.check-item textarea,
+.decision-next-step p { font-size: 11px; }
+.nav-label,
+.recent-heading,
+.recent-heading b,
+.recent-demo strong,
+.connection-pill,
+.saved-indicator,
+.workflow-bar .section-kicker,
+.sample-link,
+.length-option,
+.privacy-note,
+.beat-count,
+.text-action,
+.notice,
+.script-text,
+.script-footer,
+.progress-count,
+.add-check,
+.plan-foot,
+.decision-metrics,
+.footer,
+.library-empty { font-size: 10px; }
+.field>span i,
+.length-option small,
+.empty-topline,
+.empty-state,
+.form-section-label,
+.length-label,
+.workflow-step>span,
+.art-card-head,
+.art-card-bottom small,
+.decision-title span,
+.decision-note,
+.hero-tag { font-size: 9px; }
+@media (max-width: 760px) {
+  .workflow-step b { font-size: 8px; }
+  .empty-steps { font-size: 8px; }
+}

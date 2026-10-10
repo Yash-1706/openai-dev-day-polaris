@@ -15,7 +15,7 @@ app.post('/api/generate', async (req, res) => {
     res.json(await reviewDemo(project, process.env.OPENAI_API_KEY));
   } catch (error) {
     console.error('DemoPilot Decisions API request failed:', error instanceof Error ? error.message : 'Unknown error');
-    res.status(500).json({ error: 'Could not choose a demo focus right now. Your project is saved; try again.' });
+    res.status(502).json({ error: 'Could not choose a demo focus right now. Your project is saved; try again.' });
   }
 });
 
