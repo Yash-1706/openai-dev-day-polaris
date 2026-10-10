@@ -1,4 +1,4 @@
-import { reviewDemo, type ProjectBrief } from '../src/decision';
+import { reviewDemo, type ProjectBrief } from '../src/decision.js';
 
 const MAX_REQUEST_BYTES = 40 * 1024;
 
@@ -38,8 +38,8 @@ export async function POST(request: Request): Promise<Response> {
       length: project.length
     }, process.env.OPENAI_API_KEY);
     return Response.json(result);
-  } catch {
-    console.error('DemoPilot Decisions API request failed.');
+  } catch (error) {
+    console.error('DemoPilot Decisions API request failed:', error instanceof Error ? error.message : 'Unknown error');
     return Response.json({ error: 'Could not choose a demo focus right now. Your project is saved; try again.' }, { status: 502 });
   }
 }
