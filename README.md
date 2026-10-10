@@ -13,6 +13,19 @@ DemoPilot is a presentation coach for hackathon teams and product builders. It h
 - **Deployment:** Vercel Node.js Functions in `api/` (`/api/status`, `/api/generate`) serve the same logic as the local Express server.
 - **Agent readiness:** `public/llms.txt`, `public/llms-full.txt`, `public/openapi.json`, and `public/api/docs.md`.
 
+### How the OpenAI API is used in detail
+
+- **One request per generation:** `src/decision.ts` sends `POST https://api.openai.com/v1/decisions` with `fetch` and a Bearer key read from `OPENAI_API_KEY` on the server. The `openai` npm package is listed in `package.json`, but no source file imports it.
+- **Request body:** `{ model: "gpt-6-luna", input, questions }`. `input` is a JSON string containing `project_name`, `problem`, `audience`, `working_features` (split from the features field), `evidence_and_limitations`, and `requested_demo_seconds`.
+- **Four typed questions:**
+  - `lead_moment` (choice): one `feature_N` option per parsed feature, plus `problem_context`. With no features, it offers `problem_context` and `evidence_context`.
+  - `demo_readiness` (score): four levels, from "Not specified" to "Ready to rehearse".
+  - `concrete_evidence` (predicate): whether something showable or testable is described.
+  - `next_rehearsal_step` (choice): `prepare_proof`, `frame_limitations`, or `rehearse_feature`.
+- **Response handling:** answers are matched by `name` and `type` and cast with a TypeScript type assertion. The chosen feature is mapped back from its `feature_N` index, so the model never supplies free text for the feature name. Missing answers default to zero scores.
+- **What the model does not do:** it does not write plan text. `makePlan` in `src/App.tsx` builds the spoken script, run of show, proof, and limitations from the brief; the chosen feature only moves to the front of the list.
+- **Known gaps:** no request timeout, retry, or output cap; no runtime schema validation of the response; upstream error bodies are discarded, and only the HTTP status is logged. Each of these is listed under Current limitations.
+
 ### Test log (what was actually observed)
 
 | Check | Result |
