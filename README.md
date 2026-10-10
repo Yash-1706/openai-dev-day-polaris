@@ -215,4 +215,4 @@ The OpenAI call has no request timeout, retry, or output cap. The Decisions resp
 
 ## License
 
-No license is declared here. Check the repository for a license file before reusing or redistributing the project.
+Released under the [MIT License](LICENSE).
