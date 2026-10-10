@@ -35,7 +35,7 @@ DemoPilot is a presentation coach for hackathon teams and product builders. It h
 | Production AI generation, sample brief (earlier deployment) | Returned a focus feature and readiness 2.47/3; `/api/status` reported AI enabled |
 | Invalid brief (missing name/problem) | Rejected with HTTP 400 |
 | Browser visual check of the latest UI (font-size and workspace changes) | **Not completed** in this environment |
-| Re-test of the latest production deployment after the final commits | **Not completed** |
+| Live site after the final code commits (page, docs files, `/api/status`, invalid brief, one AI generation) | All routes returned 200, the invalid brief returned 400, and a QueueLess test brief returned a decision review (readiness 1.84/3; the model chose to lead with the problem, at low confidence) |
 
 Earlier failures that were fixed: the Vercel deployment initially lacked API routes (demo mode was silently shown), the first production generation failed inside the function runtime (fixed by calling the Decisions endpoint with `fetch`), and the local Vite proxy ignored `DEMOPILOT_API_PORT` (fixed).
 
@@ -209,6 +209,8 @@ npm run preview  # Preview the production build
 ## Current limitations
 
 No login, cloud sync, team collaboration, project/repository inspection, evidence capture, or server-side brief storage. AI review requires an operator-configured API key. Generated plans require human review and a real rehearsal.
+
+The OpenAI call has no request timeout, retry, or output cap. The Decisions response is not schema-validated at runtime (type assertion only), and upstream error bodies are discarded; only the HTTP status is logged. Readiness and confidence values are the model's estimates, not measured outcomes. The OpenAPI file restricts `length` to 45, 60, or 90, but the server does not enforce it.
 
 ## License
 
