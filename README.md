@@ -4,6 +4,28 @@
 
 DemoPilot is a presentation coach for hackathon teams and product builders. It helps a presenter decide what to show first, connect claims to visible proof, explain prototype boundaries honestly, and rehearse within a fixed time limit. It does not inspect a repository, run the product being presented, validate market demand, or measure outcomes; the presenter supplies the facts and verifies each claim.
 
+## At a glance (for evaluators)
+
+- **What it is:** a web app that turns a project brief into a timed run of show, speaking script, proof points, limitations, and rehearsal checklist.
+- **OpenAI usage:** the server calls the OpenAI Decisions API (`POST https://api.openai.com/v1/decisions`, model `gpt-6-luna`) from `src/decision.ts`. Four typed questions are asked: lead feature choice, demo readiness score, concrete-evidence predicate, and next rehearsal step. The API key is read only on the server (`api/generate.ts`, `server.ts`).
+- **Fallback:** without a key, or if the upstream call fails, the app still works in clearly labeled demo mode (`src/App.tsx`).
+- **Try it in two minutes:** see [Quick start](#quick-start). Load the sample project, click "Build my demo plan", and check the "Demo mode" or "AI focus" label.
+- **Deployment:** Vercel Node.js Functions in `api/` (`/api/status`, `/api/generate`) serve the same logic as the local Express server.
+- **Agent readiness:** `public/llms.txt`, `public/llms-full.txt`, `public/openapi.json`, and `public/api/docs.md`.
+
+### Test log (what was actually observed)
+
+| Check | Result |
+| --- | --- |
+| `npm run build` on the current tree | Passes (Vite production build) |
+| Local AI generation, sample brief via the Vite proxy | Returned a focus feature, readiness 2.4/3, and a next rehearsal step |
+| Production AI generation, sample brief (earlier deployment) | Returned a focus feature and readiness 2.47/3; `/api/status` reported AI enabled |
+| Invalid brief (missing name/problem) | Rejected with HTTP 400 |
+| Browser visual check of the latest UI (font-size and workspace changes) | **Not completed** in this environment |
+| Re-test of the latest production deployment after the final commits | **Not completed** |
+
+Earlier failures that were fixed: the Vercel deployment initially lacked API routes (demo mode was silently shown), the first production generation failed inside the function runtime (fixed by calling the Decisions endpoint with `fetch`), and the local Vite proxy ignored `DEMOPILOT_API_PORT` (fixed).
+
 ## Why DemoPilot
 
 Strong demos are short stories with visible proof. Teams often have a working prototype but struggle to decide what to show, what to say, and how to handle gaps. DemoPilot turns supplied project context into an editable run of show so teams can spend less time staring at a blank page and more time rehearsing the real product.
